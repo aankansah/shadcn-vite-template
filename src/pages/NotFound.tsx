@@ -1,19 +1,24 @@
-import { Link } from 'react-router-dom'
+import { BackgroundLines } from "@/components/ui/background-lines";
+import { Button } from "@/components/ui/button";
 
-export default function NotFound() {
+const NotFound = () => {
   return (
-    <div className='flex items-center justify-center h-screen w-screen gap-4 flex-col'>  
-      <h1 className='text-red-600 font-bold text-6xl'>404</h1>
-      <h2 className='text-gray-800 font-semibold text-2xl'>Page Not Found</h2>
-      <p className='text-gray-600 max-w-md text-center'>
-        The page you're looking for doesn't exist or has been moved.
-      </p>
-      <Link 
-        to="/" 
-        className='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors'
-      >
-        Go Home
-      </Link>
-    </div>
-  )
-}
+    <section className="flex h-full w-full items-center justify-center overflow-hidden py-32">
+      <BackgroundLines className="container flex w-full flex-col items-center justify-center px-4 md:h-full">
+        <h2 className="relative z-20 py-2 text-center font-sans text-5xl font-extrabold tracking-tighter md:py-10 lg:text-8xl">
+          Page Not Found
+        </h2>
+        <p className="text-lg text-muted-foreground mx-auto max-w-xl text-center lg:text-xl">
+          We couldn't find the page you are looking for
+        </p>
+        <div className="relative z-20 mt-10 flex w-full max-w-md items-center justify-center gap-3 rounded-full p-1">
+          <Button size="lg" onClick={() => window.location.href = '/'}>Back to home page</Button>
+        </div>
+      </BackgroundLines>
+    </section>
+  );
+};
+
+export default NotFound;
+
+

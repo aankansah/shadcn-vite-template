@@ -51,6 +51,14 @@
   --shadow-xl: 0 1px 3px 0px rgb(0 0 0 / 0.10), 0 8px 10px -1px rgb(0 0 0 / 0.10);
   --shadow-2xl: 0 1px 3px 0px rgb(0 0 0 / 0.25);
   
+  /* Site layout variables */
+  --navbar-height: 80px;
+  --footer-height: 150px;
+  --app-height: 100vh;
+  --main-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+  
+  /* Custom gradients */
+  --gradient-primary: linear-gradient(to top right, #794f9f, #426cb3);
 }
 
 .dark {
@@ -154,5 +162,28 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-gradient {
+    @apply bg-linear-to-tr from-[#794f9f] via-[#794f9f] to-[#426cb3];
+  }
+  
+  .gradient-icon {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
