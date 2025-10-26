@@ -1,10 +1,15 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LoyaltyBrandedCard from '../components/LoyaltyBrandedCard'
 import PolicyDashboardCard from '../components/PolicyDashboardCard'
+import BranchesModal from '../components/BranchesModal'
+import ClaimsModal from '../components/ClaimsModal'
 import { Button } from '../components/ui/button'
 
 export default function Home() {
   const navigate = useNavigate()
+  const [isBranchesModalOpen, setIsBranchesModalOpen] = useState(false)
+  const [isClaimsModalOpen, setIsClaimsModalOpen] = useState(false)
   
   const policyTypes = [
     {
@@ -86,8 +91,8 @@ export default function Home() {
           title="Make a claim"
           variant="large"
         >
-          <Button size='lg'>
-            Start claim
+          <Button size='lg' onClick={() => setIsClaimsModalOpen(true)}>
+            Make a Claim
           </Button>
         </LoyaltyBrandedCard>
 
@@ -95,11 +100,23 @@ export default function Home() {
           title="Branches"
           variant="large"
         >
-          <Button>
+          <Button onClick={() => setIsBranchesModalOpen(true)}>
             Find Us
           </Button>
         </LoyaltyBrandedCard>
       </div>
+
+      {/* Branches Modal */}
+      <BranchesModal 
+        isOpen={isBranchesModalOpen}
+        onClose={() => setIsBranchesModalOpen(false)}
+      />
+
+      {/* Claims Modal */}
+      <ClaimsModal 
+        isOpen={isClaimsModalOpen}
+        onClose={() => setIsClaimsModalOpen(false)}
+      />
     </div>
   )
 }
