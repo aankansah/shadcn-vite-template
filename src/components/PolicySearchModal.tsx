@@ -2,51 +2,48 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Eye, Loader2, AlertCircle, X } from "lucide-react";
+import { Search, Eye, Loader2, AlertCircle, X, Link } from "lucide-react";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { genovaService } from "@/services/genovaService";
-import PolicyDetailsModal from "./PolicyDetailsModal";
+import ViewSearchResultDetailsModal from "./ViewSearchResultDetailsModal";
 import loyaltyBackgroundTransparent from "@/assets/loyalty-background-transparent.svg";
 
 interface PolicySearchResult {
-  id: string;
+  id: number;
   policy_no: string;
-  vehicle_number?: string;
-  customer_name?: string;
-  policy_start?: string;
-  policy_end?: string;
-  status?: string;
+  insured_name: string;
+  fullname: string;
+  policy_start: string;
+  policy_end: string;
+  gross_premium: string;
+  net_premium: string;
+  status_perc: number;
+  mode_of_payment: string;
+  territorial_limit: string;
+  organisation_name: string;
+  acquired_by_name: string;
+  commission_rate: string;
+  sum_insured: string;
+  policy_duration_num: number;
+  duration_type: string;
+  createdon: string;
+  approved_on: string;
+  receipted_date: string;
+  outstanding_due: string;
+  paid_yn: number;
   [key: string]: unknown;
 }
 
-interface PolicyData {
-  policyNumber: string;
-  policyStartDate: string;
-  policyEndDate: string;
-  policyStatus: string;
-  customerName: string;
-  contactNumber: string;
-  email: string;
-  vehicleRegistrationNumber: string;
-  vehicleMake: string;
-  vehicleModel: string;
-  vehicleYearManufacture: string;
-  vehicleCC: string;
-  vehicleUsageType: string;
-  vehicleColor: string;
-  vehicleSeatingCapacity: string;
-  vehicleExtraSeats?: string;
-  vehicleChassisNumber: string;
-  vehicleNumberOfCylinders: string;
-  vehicleBodyType: string;
-  vehicleDriveType: string;
-  vehicleFuelType: string;
-  coverType: string;
-  buyExcess: string;
-  sumInsured?: string;
-  userType?: string;
-  duration: string;
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    page: number;
+    max_page: number;
+    total_records: number;
+    policies: Record<string, PolicySearchResult>;
+  };
 }
 
 interface PolicySearchModalProps {
@@ -64,7 +61,7 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [selectedPolicy, setSelectedPolicy] = useState<PolicyData | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<PolicySearchResult | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const handleClose = () => {
@@ -93,19 +90,39 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
       const response = await genovaService.searchPolicy(searchData);
 
       if (response.success) {
-        // Handle both single policy and array of policies
-        const data = response.data;
-        const results = Array.isArray(data) ? data : [data];
-        setSearchResults(results.map((item: Record<string, unknown>, index: number) => ({
-          id: (item.id as string) || `policy-${index}`,
-          policy_no: (item.policy_no as string) || (item.policyNumber as string),
-          vehicle_number: (item.vehicle_number as string) || (item.vehicleNumber as string),
-          customer_name: (item.customer_name as string) || (item.customerName as string),
-          policy_start: (item.policy_start as string) || (item.startDate as string),
-          policy_end: (item.policy_end as string) || (item.endDate as string),
-          status: (item.status as string) || "Active",
-          ...item
-        })));
+        // Handle the API response structure with policies object
+        const data = (response as ApiResponse).data;
+        if (data.policies) {
+          // Convert policies object to array
+          const policiesArray = Object.values(data.policies) as Record<string, unknown>[];
+          setSearchResults(policiesArray.map((item: Record<string, unknown>) => ({
+            id: item.id as number,
+            policy_no: item.policy_no as string,
+            insured_name: item.insured_name as string || item.fullname as string,
+            fullname: item.fullname as string,
+            policy_start: item.policy_start as string,
+            policy_end: item.policy_end as string,
+            gross_premium: item.gross_premium as string,
+            net_premium: item.net_premium as string,
+            status_perc: item.status_perc as number,
+            mode_of_payment: item.mode_of_payment as string,
+            territorial_limit: item.territorial_limit as string,
+            organisation_name: item.organisation_name as string,
+            acquired_by_name: item.acquired_by_name as string,
+            commission_rate: item.commission_rate as string,
+            sum_insured: item.sum_insured as string,
+            policy_duration_num: item.policy_duration_num as number,
+            duration_type: item.duration_type as string,
+            createdon: item.createdon as string,
+            approved_on: item.approved_on as string,
+            receipted_date: item.receipted_date as string,
+            outstanding_due: item.outstanding_due as string,
+            paid_yn: item.paid_yn as number,
+            ...item
+          })));
+        } else {
+          setSearchResults([]);
+        }
       } else {
         setError(response.message || "Search failed");
         setSearchResults([]);
@@ -129,36 +146,7 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
   };
 
   const handleViewDetails = (policy: PolicySearchResult) => {
-    // Transform PolicySearchResult to PolicyData format expected by PolicyDetailsModal
-    const policyData: PolicyData = {
-      policyNumber: policy.policy_no || "",
-      policyStartDate: policy.policy_start || "",
-      policyEndDate: policy.policy_end || "",
-      policyStatus: policy.status || "Active",
-      customerName: policy.customer_name || "",
-      contactNumber: "", // Will need to be fetched from API
-      email: "", // Will need to be fetched from API
-      vehicleRegistrationNumber: policy.vehicle_number || "",
-      vehicleMake: "", // Will need to be fetched from API
-      vehicleModel: "", // Will need to be fetched from API
-      vehicleYearManufacture: "",
-      vehicleCC: "",
-      vehicleUsageType: "",
-      vehicleColor: "",
-      vehicleSeatingCapacity: "",
-      vehicleChassisNumber: "",
-      vehicleNumberOfCylinders: "",
-      vehicleBodyType: "",
-      vehicleDriveType: "",
-      vehicleFuelType: "",
-      coverType: "",
-      buyExcess: "",
-      sumInsured: "",
-      userType: "",
-      duration: ""
-    };
-
-    setSelectedPolicy(policyData);
+    setSelectedPolicy(policy);
     setIsDetailsModalOpen(true);
   };
 
@@ -173,7 +161,7 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClose}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
             />
 
             {/* Modal */}
@@ -182,7 +170,7 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
             >
               <div className="relative w-full max-w-4xl max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
                 {/* Animated Background Pattern */}
@@ -370,26 +358,26 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
                                       {policy.policy_no}
                                     </h3>
                                     <p className="text-sm text-gray-600">
-                                      {policy.customer_name || "N/A"}
+                                      {policy.insured_name || policy.fullname || "N/A"}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                   <div>
-                                    <span className="text-gray-500">Vehicle:</span>
+                                    <span className="text-gray-500">Premium:</span>
                                     <span className="ml-2 font-medium">
-                                      {policy.vehicle_number || "N/A"}
+                                      ${policy.gross_premium || "N/A"}
                                     </span>
                                   </div>
                                   <div>
                                     <span className="text-gray-500">Status:</span>
                                     <span className={cn(
                                       "ml-2 px-2 py-1 rounded-full text-xs font-medium",
-                                      policy.status === "Active" 
+                                      policy.status_perc > 80 
                                         ? "bg-green-100 text-green-700"
                                         : "bg-gray-100 text-gray-700"
                                     )}>
-                                      {policy.status || "Active"}
+                                      {policy.status_perc}%
                                     </span>
                                   </div>
                                   {policy.policy_start && (
@@ -410,14 +398,25 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
                                   )}
                                 </div>
                               </div>
-                              <Button
-                                onClick={() => handleViewDetails(policy)}
-                                size="sm"
-                                className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                              >
-                                <Eye className="w-4 h-4" />
-                                View Details
-                              </Button>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={() => handleViewDetails(policy)}
+                                  size="sm"
+                                  className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                  View Details
+                                </Button>
+                                <Button
+                                  onClick={() => {/* TODO: Implement link policy functionality */}}
+                                  size="sm"
+                                  variant="outline"
+                                  className="flex items-center gap-2 border-purple-300 text-purple-600 hover:bg-purple-50"
+                                >
+                                  <Link className="w-4 h-4" />
+                                  Link Policy
+                                </Button>
+                              </div>
                             </div>
                           </motion.div>
                         ))}
@@ -449,7 +448,7 @@ const PolicySearchModal: React.FC<PolicySearchModalProps> = ({
       
       {/* Policy Details Modal */}
       {selectedPolicy && (
-        <PolicyDetailsModal
+        <ViewSearchResultDetailsModal
           isOpen={isDetailsModalOpen}
           onClose={() => setIsDetailsModalOpen(false)}
           policyData={selectedPolicy}

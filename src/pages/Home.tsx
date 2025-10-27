@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import LoyaltyBrandedCard from '../components/LoyaltyBrandedCard'
 import PolicyDashboardCard from '../components/PolicyDashboardCard'
 import BranchesModal from '../components/BranchesModal'
-import ClaimsModal from '../components/ClaimsModal'
+import ClaimFormModal from '../components/ClaimFormModal'
 import { Button } from '../components/ui/button'
 
 export default function Home() {
   const navigate = useNavigate()
   const [isBranchesModalOpen, setIsBranchesModalOpen] = useState(false)
-  const [isClaimsModalOpen, setIsClaimsModalOpen] = useState(false)
+  const [isClaimFormModalOpen, setIsClaimFormModalOpen] = useState(false)
   
   const policyTypes = [
     {
@@ -91,8 +91,8 @@ export default function Home() {
           title="Make a claim"
           variant="large"
         >
-          <Button size='lg' onClick={() => setIsClaimsModalOpen(true)}>
-            Make a Claim
+          <Button size='lg' onClick={() => setIsClaimFormModalOpen(true)}>
+            Make a Motor Insurance Claim
           </Button>
         </LoyaltyBrandedCard>
 
@@ -112,10 +112,11 @@ export default function Home() {
         onClose={() => setIsBranchesModalOpen(false)}
       />
 
-      {/* Claims Modal */}
-      <ClaimsModal 
-        isOpen={isClaimsModalOpen}
-        onClose={() => setIsClaimsModalOpen(false)}
+      {/* Claim Form Modal */}
+      <ClaimFormModal 
+        isOpen={isClaimFormModalOpen}
+        onClose={() => setIsClaimFormModalOpen(false)}
+        claimFormUrl="https://form.jotform.com/LOYALTY_INSURANCE/motor-claim-form"
       />
     </div>
   )

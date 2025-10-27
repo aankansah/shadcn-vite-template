@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +30,7 @@ import {
 } from "@/lib/motorFormOptions";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import MotorQuoteModal from "@/components/MotorQuoteModal";
+import { genovaService, type PolicyQuoteRequest } from "@/services/genovaService";
 
 
 // Form validation schema
@@ -77,7 +79,6 @@ type BuyMotorPolicyFormData = z.infer<typeof buyMotorPolicySchema>;
 export default function BuyMotorPolicy() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
   const [displayBodyTypeAsSelect, setDisplayBodyTypeAsSelect] = useState(true);
   const [showQuoteModal, setShowQuoteModal] = useState(true);
   const [quoteData, setQuoteData] = useState<{ net_premium: string } | null>(null);
@@ -93,6 +94,27 @@ export default function BuyMotorPolicy() {
       phone: ""
     }
   );
+
+  // Mutation for generating policy quote
+  const generateQuoteMutation = useMutation({
+    mutationFn: (quoteData: PolicyQuoteRequest) => genovaService.generatePolicyQuote(quoteData),
+    onSuccess: (response) => {
+      console.log("Quote generated successfully:", response);
+      
+      // Extract premium from response data
+      const responseData = response.data as { net_premium?: string };
+      const premium = responseData?.net_premium || "0";
+      
+      setQuoteData({ net_premium: premium });
+      setShowQuoteModal(true);
+      
+      toast.success("Quote generated successfully!");
+    },
+    onError: (error) => {
+      console.error("Quote generation failed:", error);
+      toast.error("Failed to generate quote. Please try again.");
+    },
+  });
 
   const {
     register,
@@ -138,39 +160,78 @@ export default function BuyMotorPolicy() {
     }
   };
 
+  // Helper function to transform form data to API format
+  const transformFormDataToApiFormat = (data: BuyMotorPolicyFormData): PolicyQuoteRequest => {
+    // Business class should always be 2 for motor insurance
+    const classValue = 2;
+    // Product ID varies based on coverage type: 31 = Comprehensive, 32 = Third Party
+    const isComprehensive = data.cover_type === "comprehensive";
+    const productId = isComprehensive ? "31" : "32";
+    
+    return {
+      class: classValue,
+      product_id: productId,
+      start_date: data.start_date,
+      Vehicle_registration_no: data.vehicle_registration_no,
+      vehicle_usage_type: data.vehicle_usage_type,
+      vehicle_make: data.vehicle_make,
+      vehicle_model: data.vehicle_model,
+      vehicle_yr_manufacture: data.vehicle_yr_manufacture,
+      vehicle_fuel_type: data.vehicle_fuel_type || "PETROL",
+      vehicle_no_cylinders: parseInt(data.vehicle_no_cylinders, 10) || 4,
+      vehicle_cc: data.vehicle_cc,
+      vehicle_body_type: data.vehicle_body_type || "No Body Type Entered",
+      vehicle_drive_type: data.vehicle_drive_type,
+      vehicle_seating: parseInt(data.vehicle_seating, 10) || 5,
+      vehicle_extra_seats: parseInt(data.vehicle_extra_seats || "0", 10),
+      vehicle_colour: data.vehicle_colour,
+      vehicle_trim: "Automatic (A1) PETROL 2cyl 1ltrs", // Default value as per backend schema
+      vehicle_engine_no: "T558956565GH4184646", // Default value as per backend schema
+      vehicle_claim_free: 0, // Default value as per backend schema
+      vehicle_additional_remarks: data.vehicle_chassis_no || "No additional remarks", // Use chassis number or default
+      user_category_id: "1", // Default category
+      customer_name: data.customer_name,
+      prefcontact: data.prefcontact,
+      prefemail: data.prefemail,
+      user_type: data.user_type || "private",
+    };
+  };
+
   const onSubmit = async (data: BuyMotorPolicyFormData) => {
-    setLoading(true);
-
     try {
-      // Simulate API call with mock response
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock API response - replace with actual API call
-      const mockResponse = {
-        message: "Successful",
-        code: 200,
-        data: {
-          net_premium: "682"
-        }
-      };
-
-      // Here you would make the actual API call
       console.log("Form data:", data);
-
-      // Set quote data, start date, customer info, and show modal
-      setQuoteData(mockResponse.data);
+      
+      // Transform form data to API format
+      const apiData = transformFormDataToApiFormat(data);
+      
+      console.log("Transformed API data:", apiData);
+      console.log("Data types check:");
+      console.log("- class:", typeof apiData.class, apiData.class);
+      console.log("- vehicle_no_cylinders:", typeof apiData.vehicle_no_cylinders, apiData.vehicle_no_cylinders);
+      console.log("- vehicle_seating:", typeof apiData.vehicle_seating, apiData.vehicle_seating);
+      console.log("- vehicle_extra_seats:", typeof apiData.vehicle_extra_seats, apiData.vehicle_extra_seats);
+      console.log("- vehicle_claim_free:", typeof apiData.vehicle_claim_free, apiData.vehicle_claim_free);
+      
+      // Log all field names and values for debugging
+      console.log("All API fields:");
+      Object.entries(apiData).forEach(([key, value]) => {
+        console.log(`  ${key}: ${typeof value} = ${value}`);
+      });
+      
+      // Set customer info and start date for the modal
       setStartDate(data.start_date);
       setCustomerInfo({
         name: data.customer_name,
         email: data.prefemail,
         phone: data.prefcontact,
       });
-      setShowQuoteModal(true);
 
-    } catch {
+      // Call the mutation to generate quote
+      generateQuoteMutation.mutate(apiData);
+
+    } catch (error) {
+      console.error("Form submission error:", error);
       toast.error("Failed to submit quote request. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -703,11 +764,11 @@ export default function BuyMotorPolicy() {
           <Button
             type="submit"
             size="lg"
-            disabled={loading}
+            disabled={generateQuoteMutation.isPending}
             className="w-full"
             form="third-party-form"
           >
-            {loading ? (
+            {generateQuoteMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Getting Quote...

@@ -4,20 +4,16 @@ import { X, FileText } from 'lucide-react'
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils'
 
-interface PolicyDetailsModalProps {
+interface ClaimFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  policyData: {
-    policyNumber: string;
-    customerName: string;
-    documentUrl: string;
-  };
+  claimFormUrl: string;
 }
 
-const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
+const ClaimFormModal: React.FC<ClaimFormModalProps> = ({
   isOpen,
   onClose,
-  policyData,
+  claimFormUrl,
 }) => {
   return (
     <AnimatePresence>
@@ -59,9 +55,9 @@ const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
                       <FileText className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-white">Policy Document</h2>
+                      <h2 className="text-lg font-bold text-white">Motor Insurance Claim Form</h2>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-white/80">Policy #{policyData.policyNumber} - {policyData.customerName}</span>
+                        <span className="text-sm text-white/80">Loyalty Insurance Claims Portal</span>
                       </div>
                     </div>
                   </div>
@@ -76,13 +72,13 @@ const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
                 </div>
               </div>
 
-              {/* Document Content */}
+              {/* Claim Form Content */}
               <div className="relative z-20 h-[calc(100vh-80px)]">
                 <iframe
-                  src={policyData.documentUrl}
+                  src={claimFormUrl}
                   className="w-full h-full border-0"
-                  title={`Policy Document - ${policyData.policyNumber}`}
-                loading="lazy"
+                  title="Motor Insurance Claim Form"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -93,4 +89,4 @@ const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
   );
 };
 
-export default PolicyDetailsModal;
+export default ClaimFormModal;

@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const GENOVA_BASE_URL = import.meta.env.VITE_GENOVA_BASE_API_URL || '/api/mobile';
+import genovaAPI from '@/http/genovaAPI';
 
 // Constants for business class numbers
 export const BusinessClassNumber = {
@@ -24,7 +22,7 @@ interface BaseResponse {
 
 // Policy Quote interfaces
 export interface PolicyQuoteRequest {
-  class: BusinessClassNumberType;
+  class: BusinessClassNumberType | string;
   product_id: string;
   start_date: string;
   Vehicle_registration_no: string;
@@ -148,12 +146,7 @@ export const genovaService = {
    */
   generatePolicyQuote: async (quoteData: PolicyQuoteRequest): Promise<PolicyQuoteResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/policyQuote`, quoteData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/policyQuote', quoteData);
       return response.data;
     } catch (error) {
       console.error('Policy quote generation error:', error);
@@ -166,12 +159,7 @@ export const genovaService = {
    */
   createPolicy: async (policyData: PolicyCreateRequest): Promise<PolicyCreateResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/policy`, policyData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/policy', policyData);
       return response.data;
     } catch (error) {
       console.error('Policy creation error:', error);
@@ -184,12 +172,7 @@ export const genovaService = {
    */
   searchPolicy: async (searchData: PolicySearchRequest): Promise<PolicySearchResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/policy-search`, searchData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/policy-search', searchData);
       return response.data;
     } catch (error) {
       console.error('Policy search error:', error);
@@ -202,12 +185,7 @@ export const genovaService = {
    */
   generateDebitNote: async (debitData: DebitNoteRequest): Promise<DebitNoteResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/generate-debit-note`, debitData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/generate-debit-note', debitData);
       return response.data;
     } catch (error) {
       console.error('Debit note generation error:', error);
@@ -220,12 +198,7 @@ export const genovaService = {
    */
   payPolicy: async (paymentData: PayPolicyRequest): Promise<PayPolicyResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/pay-policy`, paymentData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/pay-policy', paymentData);
       return response.data;
     } catch (error) {
       console.error('Policy payment error:', error);
@@ -238,12 +211,7 @@ export const genovaService = {
    */
   renewPolicy: async (renewalData: PolicyRenewalRequest): Promise<PolicyRenewalResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/policy-renew`, renewalData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/policy-renew', renewalData);
       return response.data;
     } catch (error) {
       console.error('Policy renewal error:', error);
@@ -256,12 +224,7 @@ export const genovaService = {
    */
   createCustomer: async (customerData: CustomerCreateRequest): Promise<CustomerCreateResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/customer-create`, customerData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/customer-create', customerData);
       return response.data;
     } catch (error) {
       console.error('Customer creation error:', error);
@@ -274,12 +237,7 @@ export const genovaService = {
    */
   searchCustomer: async (searchData: CustomerSearchRequest): Promise<CustomerSearchResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/customer-search`, searchData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/customer-search', searchData);
       return response.data;
     } catch (error) {
       console.error('Customer search error:', error);
@@ -292,12 +250,7 @@ export const genovaService = {
    */
   pushToMid: async (midData: PushToMidRequest): Promise<PushToMidResponse> => {
     try {
-      const response = await axios.post(`${GENOVA_BASE_URL}/push-to-mid`, midData, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      
+      const response = await genovaAPI.post('/push-to-mid', midData);
       return response.data;
     } catch (error) {
       console.error('Push to MID error:', error);

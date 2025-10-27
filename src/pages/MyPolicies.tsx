@@ -7,7 +7,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Car, Calendar, FileText, User, Shield, Clock } from "lucide-react";
 import PolicyRenewalModal from "@/components/PolicyRenewalModal";
 import MotorQuoteModal from "@/components/MotorQuoteModal";
 import PolicyDetailsModal from "@/components/PolicyDetailsModal";
@@ -19,6 +19,7 @@ interface Policy {
   policyEndDate: string;
   renewalDate: string;
   policyStatus: "expired" | "active";
+  documentUrl: string;
   
   // Customer Information
   customerName: string;
@@ -81,8 +82,8 @@ const MyPolicies: React.FC = () => {
     setIsRenewalModalOpen(true);
   };
 
-  const handleRenewalProceed = (startDate: string) => {
-    setRenewalStartDate(startDate);
+  const handleRenewalProceed = (renewalDate: Date) => {
+    setRenewalStartDate(renewalDate.toISOString().split('T')[0]);
     setIsRenewalModalOpen(false);
     setIsQuoteModalOpen(true);
   };
@@ -112,6 +113,7 @@ const MyPolicies: React.FC = () => {
       policyEndDate: "31st August, 2025",
       renewalDate: "31st August 2025, 11:59pm",
       policyStatus: "expired",
+      documentUrl: "https://loyalty.genovainsure.com/external/policy?pno=TElDL0hRL01PVC9NQy8yNC80NzY=",
       
       // Customer Information
       customerName: "John Doe",
@@ -145,6 +147,7 @@ const MyPolicies: React.FC = () => {
       policyEndDate: "22nd October, 2025",
       renewalDate: "22nd October 2025, 11:59pm",
       policyStatus: "expired",
+      documentUrl: "https://loyalty.genovainsure.com/external/policy?pno=TElDL0hRL01PVC9NQy8yNC80NzY=",
       
       // Customer Information
       customerName: "Jane Smith",
@@ -214,43 +217,69 @@ const MyPolicies: React.FC = () => {
             {policies.map((policy, index) => (
               <Card
                 key={index}
-                className="bg-white shadow-sm border border-gray-200 rounded-3xl"
+                className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 shadow-lg border border-blue-200/50 rounded-2xl hover:shadow-xl transition-all duration-300 overflow-hidden relative"
               >
-                <CardHeader className="pb-4">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute top-4 right-4 w-32 h-32 bg-blue-300 rounded-full blur-3xl"></div>
+                  <div className="absolute bottom-4 left-4 w-24 h-24 bg-purple-300 rounded-full blur-2xl"></div>
+                </div>
+
+                <CardHeader className="pb-4 relative z-10">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
-                      Motor Insurance Policy
-                    </CardTitle>
-                    {/* {getStatusBadge(policy.policyStatus)} */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <Shield className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl font-bold text-gray-900">
+                          Motor Insurance Policy
+                        </CardTitle>
+                        <p className="text-sm text-gray-600 flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {policy.customerName}
+                        </p>
+                      </div>
+                    </div>
+                    {getStatusBadge(policy.policyStatus)}
                   </div>
                 </CardHeader>
 
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 relative z-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Left Column */}
                     <div className="space-y-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Policy Number
-                        </h3>
-                        <p className="text-sm text-gray-900">
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileText className="w-4 h-4 text-blue-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Policy Number
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-900 font-mono">
                           {policy.policyNumber}
                         </p>
                       </div>
 
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Policy Start Date
-                        </h3>
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="w-4 h-4 text-green-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Policy Start Date
+                          </h3>
+                        </div>
                         <p className="text-sm text-gray-900">
                           {policy.policyStartDate}
                         </p>
                       </div>
 
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Renewal Date
-                        </h3>
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Clock className="w-4 h-4 text-orange-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Renewal Date
+                          </h3>
+                        </div>
                         <p className="text-sm text-gray-900">
                           {policy.renewalDate}
                         </p>
@@ -259,52 +288,69 @@ const MyPolicies: React.FC = () => {
 
                     {/* Right Column */}
                     <div className="space-y-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Vehicle Registration Number
-                        </h3>
-                        <p className="text-sm text-gray-900">
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Car className="w-4 h-4 text-purple-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Vehicle Registration
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-900 font-mono">
                           {policy.vehicleRegistrationNumber}
+                        </p>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {policy.vehicleMake} {policy.vehicleModel} ({policy.vehicleYearManufacture})
                         </p>
                       </div>
 
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Policy End Date
-                        </h3>
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="w-4 h-4 text-red-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Policy End Date
+                          </h3>
+                        </div>
                         <p className="text-sm text-gray-900">
                           {policy.policyEndDate}
                         </p>
                       </div>
 
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-1">
-                          Policy Status
-                        </h3>
-                        {getStatusBadge(policy.policyStatus)}
+                      <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Shield className="w-4 h-4 text-blue-600" />
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            Coverage Type
+                          </h3>
+                        </div>
+                        <p className="text-sm text-gray-900 capitalize">
+                          {policy.coverType.replace('_', ' ')}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="flex flex-wrap gap-3">
-                    <Button 
-                      variant="outline" 
-                      className=" hover:bg-purple-50"
-                      onClick={() => handleViewPolicyDetails(policy)}
-                    >
-                      VIEW POLICY DETAILS
-                    </Button>
-                    {policy.policyStatus === 'expired' && (
+                  <div className="mt-6 pt-4 border-t border-white/30">
+                    <div className="flex flex-wrap gap-3">
                       <Button 
-                        onClick={() => handleRenewPolicy(policy)}
+                        variant="outline" 
+                        className="bg-white/80 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700 font-medium"
+                        onClick={() => handleViewPolicyDetails(policy)}
                       >
-                        RENEW POLICY
+                        <FileText className="w-4 h-4 mr-2" />
+                        VIEW POLICY DOCUMENT
                       </Button>
-                    )}
+                      {policy.policyStatus === 'expired' && (
+                        <Button 
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium shadow-lg"
+                          onClick={() => handleRenewPolicy(policy)}
+                        >
+                          <Shield className="w-4 h-4 mr-2" />
+                          RENEW POLICY
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </CardContent>
               </Card>
             ))}
@@ -348,8 +394,14 @@ const MyPolicies: React.FC = () => {
       <PolicyRenewalModal
         isOpen={isRenewalModalOpen}
         onClose={() => setIsRenewalModalOpen(false)}
-        onProceed={handleRenewalProceed}
-        policyNumber={selectedPolicyForRenewal?.policyNumber || ""}
+        onRenew={handleRenewalProceed}
+        policyData={{
+          policyNumber: selectedPolicyForRenewal?.policyNumber || "",
+          customerName: selectedPolicyForRenewal?.customerName || "",
+          vehicleRegistrationNumber: selectedPolicyForRenewal?.vehicleRegistrationNumber || "",
+          policyEndDate: selectedPolicyForRenewal?.policyEndDate || "",
+          coverType: selectedPolicyForRenewal?.coverType || ""
+        }}
       />
 
       {/* Quote Modal */}
@@ -367,7 +419,11 @@ const MyPolicies: React.FC = () => {
         <PolicyDetailsModal
           isOpen={isPolicyDetailsModalOpen}
           onClose={handlePolicyDetailsModalClose}
-          policyData={selectedPolicyForDetails}
+          policyData={{
+            policyNumber: selectedPolicyForDetails.policyNumber,
+            customerName: selectedPolicyForDetails.customerName,
+            documentUrl: selectedPolicyForDetails.documentUrl
+          }}
         />
       )}
     </div>

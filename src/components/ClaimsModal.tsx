@@ -96,7 +96,7 @@ const ClaimsModal: React.FC<ClaimsModalProps> = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
           />
 
           {/* Modal */}
@@ -105,7 +105,7 @@ const ClaimsModal: React.FC<ClaimsModalProps> = ({ isOpen, onClose }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           >
             <div className="relative w-full max-w-2xl max-h-[90vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
               {/* Animated Background Pattern */}

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, MapPin, User, Phone, FileText, Camera } from "lucide-react";
+import { ArrowLeft, Phone, FileText, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ClaimFormModal from "@/components/ClaimFormModal";
 
 interface ClaimData {
   id: string;
@@ -22,6 +23,7 @@ interface ClaimData {
 
 const MyClaims: React.FC = () => {
   const navigate = useNavigate();
+  const [isClaimFormModalOpen, setIsClaimFormModalOpen] = useState(false);
 
   // Mock claims data - replace with actual API call
   const claims: ClaimData[] = [
@@ -109,34 +111,44 @@ const MyClaims: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gray-50 grid grid-rows-[auto_1fr]">
+    <div className="h-full grid grid-rows-[auto_1fr]">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-sm border-white/20 sticky top-0 z-10">
         <div className=" px-4 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(-1)}
-              className="p-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                My Claims
-              </h1>
-              <p className="text-gray-600 text-sm">
-                Track and manage your insurance claims
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="p-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold bg-linear-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  My Claims
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Track and manage your insurance claims
+                </p>
+              </div>
             </div>
+            <Button
+              onClick={() => setIsClaimFormModalOpen(true)}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Make a Motor Insurance Claim
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Claims List */}
       <div className="w-full h-full overflow-y-auto overflow-x-clip">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           {claims.length === 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -155,95 +167,59 @@ const MyClaims: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden"
+                  className="group relative bg-gradient-to-br from-white via-white to-gray-50/50 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 p-8 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden"
                 >
-                  {/* Claim Header */}
-                  <div className="p-6 border-b border-gray-100">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Claim #{claim.claimNumber}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Submitted on {new Date(claim.submittedDate).toLocaleDateString()}
-                        </p>
+                  {/* Background gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <FileText className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                            Claim #{claim.claimNumber}
+                          </h3>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Submitted on {new Date(claim.submittedDate).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </p>
+                        </div>
                       </div>
                       <div className={cn(
-                        "px-3 py-1 rounded-full text-xs font-medium border",
+                        "px-4 py-2 rounded-full text-sm font-semibold border-2 shadow-sm",
                         getStatusColor(claim.status)
                       )}>
                         {getStatusText(claim.status)}
                       </div>
                     </div>
 
-                    {/* Policy Info */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-purple-600" />
-                        <span className="text-gray-600">Policy:</span>
-                        <span className="font-medium">{claim.policyType}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-purple-600" />
-                        <span className="text-gray-600">Date:</span>
-                        <span className="font-medium">{new Date(claim.dateOfAccident).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-purple-600" />
-                        <span className="text-gray-600">Insured:</span>
-                        <span className="font-medium">{claim.insuredName}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-purple-600" />
-                        <span className="text-gray-600">Location:</span>
-                        <span className="font-medium">{claim.placeOfAccident}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Claim Content */}
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Photos Section */}
-                      {claim.photos.length > 0 && (
-                        <div>
-                          <div className="flex items-center gap-2 mb-4">
-                            <Camera className="w-5 h-5 text-purple-600" />
-                            <h4 className="font-semibold text-gray-900">Accident Photos</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-purple-600" />
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            {claim.photos.map((photo, photoIndex) => (
-                              <div key={photoIndex} className="relative group">
-                                <img
-                                  src={photo}
-                                  alt={`Accident photo ${photoIndex + 1}`}
-                                  className="w-full h-32 object-cover rounded-lg border border-gray-200 group-hover:shadow-md transition-shadow"
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg" />
-                              </div>
-                            ))}
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Policy Type</p>
+                            <p className="font-semibold text-gray-900">{claim.policyType}</p>
                           </div>
                         </div>
-                      )}
-
-                      {/* Description Section */}
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Description of Accident</h4>
-                        <p className="text-gray-700 leading-relaxed">
-                          {claim.descriptionOfAccident}
-                        </p>
-                        
-                        {/* Additional Details */}
-                        <div className="mt-4 space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-400" />
-                            <span className="text-gray-600">Contact:</span>
-                            <span className="font-medium">{claim.insuredPhoneNumber}</span>
+                      </div>
+                      <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Phone className="w-4 h-4 text-blue-600" />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-gray-400" />
-                            <span className="text-gray-600">Vehicle Insurance:</span>
-                            <span className="font-medium">{claim.vehicleInsuranceNumber}</span>
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Contact</p>
+                            <p className="font-semibold text-gray-900">{claim.insuredPhoneNumber}</p>
                           </div>
                         </div>
                       </div>
@@ -255,6 +231,13 @@ const MyClaims: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Claim Form Modal */}
+      <ClaimFormModal 
+        isOpen={isClaimFormModalOpen}
+        onClose={() => setIsClaimFormModalOpen(false)}
+        claimFormUrl="https://form.jotform.com/LOYALTY_INSURANCE/motor-claim-form"
+      />
     </div>
   );
 };
