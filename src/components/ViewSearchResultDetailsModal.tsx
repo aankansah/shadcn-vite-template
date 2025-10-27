@@ -92,7 +92,7 @@ const ViewSearchResultDetailsModal: React.FC<ViewSearchResultDetailsModalProps> 
             }}
           >
             <div className={cn(
-              'relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl',
+              'relative w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl',
               'bg-linear-to-br from-blue-100 via-purple-100 to-indigo-200',
               'border border-blue-200/50 shadow-2xl backdrop-blur-sm'
             )}>
@@ -124,33 +124,31 @@ const ViewSearchResultDetailsModal: React.FC<ViewSearchResultDetailsModalProps> 
               />
 
               {/* Header */}
-              <div className="relative z-20 p-6 pb-4 border-b border-blue-200/30">
+              <div className="relative z-20 flex-shrink-0 p-6 pb-4 border-b border-blue-200/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                       <FileText className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-800">Policy Details</h2>
+                      <h2 className="text-xl font-bold text-slate-800">Policy Details</h2>
                       <div className="flex items-center gap-2">
+                        <span className="text-sm text-slate-600">{policyData.policy_no}</span>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm text-slate-600">Policy #{policyData.policy_no}</span>
                       </div>
                     </div>
                   </div>
                   <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={onClose}
-                    className="text-slate-600 hover:text-slate-800 hover:bg-white/50"
+                    className="w-8 h-8 p-0 bg-white/80 hover:bg-white border border-slate-200 rounded-lg shadow-sm"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 text-slate-600" />
                   </Button>
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="relative z-20 p-6">
+              {/* Scrollable Content */}
+              <div className="relative z-20 flex-1 overflow-y-auto p-6">
                 <div className="space-y-6">
                   {/* Policy Status */}
                   <motion.div
@@ -314,9 +312,11 @@ const ViewSearchResultDetailsModal: React.FC<ViewSearchResultDetailsModalProps> 
                     </div>
                   </motion.div>
                 </div>
+              </div>
 
-                {/* Footer */}
-                <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-white/20">
+              {/* Footer */}
+              <div className="relative z-20 flex-shrink-0 p-6 border-t border-white/20">
+                <div className="flex justify-end">
                   <Button
                     onClick={onClose}
                     className="px-6 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all duration-200 font-medium"

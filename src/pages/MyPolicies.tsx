@@ -213,11 +213,11 @@ const MyPolicies: React.FC = () => {
       
       <div className="w-full py-8 px-6 h-full overflow-y-auto">
         <div className="max-w-[1000px] w-full mx-auto h-full">
-          <div className="space-y-4">
+          <div className="space-y-4 pb-20">
             {policies.map((policy, index) => (
               <Card
                 key={index}
-                className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 shadow-lg border border-blue-200/50 rounded-2xl hover:shadow-xl transition-all duration-300 overflow-hidden relative"
+                className="bg-linear-to-br from-white via-blue-50/30 to-purple-50/30 shadow-lg border border-blue-200/50 rounded-2xl hover:shadow-xl transition-all duration-300 overflow-hidden relative"
               >
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">

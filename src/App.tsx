@@ -5,6 +5,7 @@ import BuyMotorPolicy from './pages/BuyMotorPolicy'
 import PolicyPreparation from './pages/PolicyPreparation'
 import MyPolicies from './pages/MyPolicies'
 import MyClaims from './pages/MyClaims'
+import Account from './pages/Account'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import NotFound from './pages/NotFound'
@@ -21,6 +22,7 @@ function App() {
           <Route path="/policy-preparation" element={<PolicyPreparation />} />
           <Route path="/my-policies" element={<MyPolicies />} />
           <Route path="/my-claims" element={<MyClaims />} />
+          <Route path="/account" element={<Account />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

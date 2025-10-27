@@ -18,7 +18,7 @@ export default function BottomNavigation() {
       active: homeActive,
       inactive: home,
     } },
-    { path: '/policies', label: 'Policies', icon: {
+    { path: '/my-policies', label: 'My Policies', icon: {
       active: searchActive,
       inactive: search,
     } },
@@ -30,7 +30,7 @@ export default function BottomNavigation() {
 
   return (
     <footer className='relative h-(--footer-height) mx-auto z-10'>
-      <img src={wave} alt='Wave background' className='absolute inset-x-0 top-2 sm:top-0 lg:-top-5 2xl:-top-10 w-full pointer-events-none select-none' />
+      <img src={wave} alt='Wave background' className='absolute inset-x-0 top-2 sm:top-0 lg:-top-10 2xl:-top-12 w-full pointer-events-none select-none' />
       {/* // Intentional: Do not remove */}
       <img src={wave} alt='Wave background' className='md:hidden absolute inset-x-0 top-14 w-full pointer-events-none select-none' />
       

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,8 @@ export default function MotorQuoteModal({
   customerInfo,
 }: QuoteModalProps) {
   const navigate = useNavigate();
+  const [isPaystackOpen, setIsPaystackOpen] = useState(false);
+  
   const formatCurrency = (amount: string) => {
     return new Intl.NumberFormat("en-GH", {
       style: "currency",
@@ -52,10 +55,21 @@ export default function MotorQuoteModal({
     });
   };
 
+  // Close dialog when Paystack opens, reopen when Paystack closes
+  const handlePaystackOpen = () => {
+    setIsPaystackOpen(true);
+  };
+
+  const handlePaystackClose = () => {
+    setIsPaystackOpen(false);
+    toast("Wait! Don't leave😞");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
         className="max-w-md mx-auto bg-white rounded-2xl shadow-2xl border-0 p-0 overflow-hidden"
+        style={{ zIndex: isPaystackOpen ? 30 : 50 }}
         showCloseButton={false}
       >
         {/* Header Section */}
@@ -130,26 +144,29 @@ export default function MotorQuoteModal({
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <PaystackButton
-              publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || ""}
-              email={customerInfo.email}
-              amount={parseFloat(quoteData.net_premium) * 100}
-              metadata={{
-                name: customerInfo.name,
-                phone: customerInfo.phone,
-                custom_fields: []
-              }}
-              currency="GHS"
-              text="Buy Policy Now"
-              onSuccess={() => {
-                toast.success("Payment successful! Preparing your policy...");
-                onClose();
-                const flow = coverType === "renewal" ? "motor-policy-renewal" : "motor-policy-creation";
-                navigate(`/policy-preparation?flow=${flow}`);
-              }}
-              onClose={() => toast("Wait! Don't leave😞")}
-              className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-            />
+            <div onClick={handlePaystackOpen}>
+              <PaystackButton
+                publicKey={import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || ""}
+                email={customerInfo.email}
+                amount={parseFloat(quoteData.net_premium) * 100}
+                metadata={{
+                  name: customerInfo.name,
+                  phone: customerInfo.phone,
+                  custom_fields: []
+                }}
+                currency="GHS"
+                text="Buy Policy Now"
+                onSuccess={() => {
+                  setIsPaystackOpen(false);
+                  toast.success("Payment successful! Preparing your policy...");
+                  onClose();
+                  const flow = coverType === "renewal" ? "motor-policy-renewal" : "motor-policy-creation";
+                  navigate(`/policy-preparation?flow=${flow}`);
+                }}
+                onClose={handlePaystackClose}
+                className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+              />
+            </div>
             
             <Button
               onClick={onClose}

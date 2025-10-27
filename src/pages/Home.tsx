@@ -49,7 +49,7 @@ export default function Home() {
   }
 
   return (
-    <div className='pt-10 space-y-10 w-full h-full overflow-y-auto overflow-x-clip'>
+    <div className='pt-10 space-y-10 w-full h-full overflow-y-auto overflow-x-clip pb-10'>
       {/* Greeting */}
       <div className='mb-6 px-10'>
         <h1 className='text-xl text-gray-900 mb-2'>

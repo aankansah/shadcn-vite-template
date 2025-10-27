@@ -77,12 +77,12 @@ const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
               </div>
 
               {/* Document Content */}
-              <div className="relative z-20 h-[calc(100vh-80px)]">
+              <div className="relative z-20 h-[calc(100vh-80px)] w-screen">
                 <iframe
                   src={policyData.documentUrl}
-                  className="w-full h-full border-0"
+                  className="w-screen h-full border-0"
                   title={`Policy Document - ${policyData.policyNumber}`}
-                loading="lazy"
+                  // loading="lazy"
                 />
               </div>
             </div>

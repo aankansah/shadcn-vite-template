@@ -16,6 +16,7 @@ import {
   Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PolicyDetailsModal from "@/components/PolicyDetailsModal";
 
 // Types for different flow configurations
 interface ApiResponse {
@@ -198,6 +199,9 @@ const PolicyPreparation = () => {
   >({});
   const [documentUrl, setDocumentUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  
+  // State for policy details modal
+  const [isPolicyDetailsModalOpen, setIsPolicyDetailsModalOpen] = useState(false);
 
   // Create refs for each step, the scrollable container, and completion section
   const stepRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -332,7 +336,7 @@ const PolicyPreparation = () => {
 
       // If this is the last step, set document URL
       if (i === flow.steps.length - 1) {
-        setDocumentUrl("https://example.com/policy-document.pdf");
+        setDocumentUrl("https://loyalty.genovainsure.com/external/policy?pno=TElDL0hRL01PVC9NQy8yNC80NzY=");
       }
     }
   };
@@ -505,21 +509,30 @@ const PolicyPreparation = () => {
                 <div className="space-y-3">
                   {documentUrl && (
                     <Button
-                      onClick={() => window.open("/my-policies", "_blank")}
+                      onClick={() => setIsPolicyDetailsModalOpen(true)}
                       className="w-full bg-white text-green-600 hover:bg-green-50"
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      View My Policies
+                      View Policy Document
                     </Button>
                   )}
 
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate("/")}
-                    className="w-full border-white hover:bg-white text-green-600"
-                  >
-                    Return to Dashboard
-                  </Button>
+                  <div className="flex items-center gap-4 w-full">
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/my-policies")}
+                      className="flex-1 border-white hover:bg-white text-blue-600"
+                    >
+                      View My Policies
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/")}
+                      className="flex-1 border-white hover:bg-white text-black"
+                    >
+                      Return to Dashboard
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -527,9 +540,22 @@ const PolicyPreparation = () => {
           )}
         </div>
       </div>
-      <div className="bg-linear-to-b from-white text-red-600 text-center to-transparent border-t border-gray-200 p-4 z-50">
-        <p>Policy preparation in progress. Please do not close this page.</p>
+      <div className="bg-linear-to-b from-white text-center to-transparent border-t border-gray-200 p-4 z-50">
+        <p className="bg-red-600 text-white py-2 px-4 rounded-full font-medium text-xl">NOTE: Policy preparation in progress. Please do not close this page.</p>
       </div>
+
+      {/* Policy Details Modal */}
+      {documentUrl && (
+        <PolicyDetailsModal
+          isOpen={isPolicyDetailsModalOpen}
+          onClose={() => setIsPolicyDetailsModalOpen(false)}
+          policyData={{
+            policyNumber: "POL-2024-001234",
+            customerName: "John Doe",
+            documentUrl: documentUrl
+          }}
+        />
+      )}
     </div>
   );
 };

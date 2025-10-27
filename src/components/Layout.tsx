@@ -17,7 +17,7 @@ export default function Layout() {
         <BottomNavigation />
 
         {/* Design Element */}
-        <img src={loyaltyBackgroundTransparent} alt="design element" className='z-10 absolute bottom-0 right-0 h-[1000px] w-[1000px]' />
+        <img src={loyaltyBackgroundTransparent} alt="design element" className='z-0 absolute bottom-0 right-0 h-[1000px] w-[1000px]' />
       </div>
     </div>
   )
