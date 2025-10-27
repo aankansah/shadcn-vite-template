@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { User, Phone, Mail, Shield, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { isValidGhanaianPhoneNumber, formatGhanaianPhoneNumber } from "@/lib/helpers";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,7 +22,7 @@ import AuthLayout from "@/components/AuthLayout";
 const signupSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"),
+  phoneNumber: z.string().refine(isValidGhanaianPhoneNumber, "Please enter a valid Ghanaian phone number"),
   email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
 });
 
@@ -100,8 +101,13 @@ export default function Signup() {
   };
 
   const handleSignupSubmit = (data: SignupFormData) => {
-    setSignupData(data);
-    sendOtpMutation.mutate(data);
+    // Format phone number to international format
+    const formattedData = {
+      ...data,
+      phoneNumber: formatGhanaianPhoneNumber(data.phoneNumber)
+    };
+    setSignupData(formattedData);
+    sendOtpMutation.mutate(formattedData);
   };
 
   const handleOtpSubmit = (data: OtpFormData) => {
